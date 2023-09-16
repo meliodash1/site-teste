@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Anime Fire</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Anime FIre</h1>
+    <nav>
+      <a href="#">Animes</a>
+      <a href="#">Filmes</a>
+      <a href="#">Generos</a>
+      <a href="#">Mais</a>
+
+      <div class="search-container">
+        <input id="searchInput" type="text" placeholder="Pesquisar">
+        <button onclick="search()">Buscar</button>
+      </div>
+    </nav>
+  </header>
+  
+  <h2>Episódios Recentes</h2>
+  <div id="topMangasContainer">
+    <!-- Aqui serão adicionados os mangás mais recentes através do JavaScript -->
+  </div>
+  
+  <h2>Animes Recentes</h2>
+  <div id="popularMangasContainer">
+    <!-- Aqui serão adicionados os mangás populares através do JavaScript -->
+  </div>
+
+  <script>
+    async function getTopMangas(url) {
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Erro:', error);
+        return [];
+      }
+    }
+
+    // Função para realizar a pesquisa
+    function search() {
+      const searchInput = document.getElementById('searchInput');
+      const query = searchInput.value.trim(); // Obter o valor do campo de pesquisa
+
+      if (query) {
+        // Se o campo de pesquisa não estiver vazio, redirecionar para a página de pesquisa
+        const searchURL = `pesquisar.html?q=${encodeURIComponent(query)}`;
+        window.location.href = searchURL;
+      }
+    }
+
+    async function displayTopMangas() {
+      // Exibir os mangás mais recentes
+      const latestMangas = await getTopMangas('https://animesvision.vercel.app/home/episodios');
+      const topMangasContainer = document.getElementById('topMangasContainer');
+
+      latestMangas.forEach((manga) => {
+        const div = document.createElement('div');
+        div.classList.add('manga-card');
+        div.innerHTML = `
+          <img src="${manga.thumbnail}" alt="Capa do Mangá">
+          <h3>${manga.title}</h3>
+          <p>${manga.quality}</p>
+          <p>${manga.episodeNumber}</p>
+        `;
+
+        topMangasContainer.appendChild(div);
+      });
+
+      // Exibir os animes em lançamento
+      const popularMangas = await getTopMangas('https://animesvision.vercel.app/home/recentes');
+      const popularMangasContainer = document.getElementById('popularMangasContainer');
+
+      popularMangas.forEach((manga) => {
+        const div = document.createElement('div');
+        div.classList.add('manga-card-l');
+        div.innerHTML = `
+          <img src="${manga.thumbnail}" alt="Capa do Mangá">
+          <h3>${manga.title}</h3>
+          <p>${manga.dub}</p>
+        `;
+
+        popularMangasContainer.appendChild(div);
+      });
+    }
+
+    displayTopMangas();
+  </script>
+</body>
+</html>
